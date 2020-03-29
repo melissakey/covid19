@@ -18,6 +18,7 @@ N <- hubei$N
 
 # set parameters for the model
 R0 <- 6
+
 beta <- 1/8
 I0_factor <- 10
 new_times = 1:70
@@ -62,9 +63,6 @@ opt$par
 # If you type "opt$", Rstudio brings up a list of all the elements within opt (such as par).  
 # ?nls.lm or help("nls.lm") brings up help on the function.  help quality varies a lot, but sometimes it tells you what the different elements of the output are.
 
-
-
-
 init <- data %>%
   slice(1) %>%
   transmute(
@@ -76,7 +74,6 @@ init <- data %>%
   select(S, I, X, R) %>%
   unlist() %>%
   set_names(c("S", "I", "X", "R"))
-
 
 new <- ode(y = init, times = new_times, func = eval(as.symbol(fun)), parms = opt$par, method = 'ode45') %>%
   as.data.frame() %>%

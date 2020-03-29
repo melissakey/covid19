@@ -136,7 +136,7 @@ predict_infections <- function(data, fun, new_times = 1:70, I0_factor = 10, R0 =
   data %>%
     mutate(
       # 
-      opt = map2(data, N,                  # 
+      opt = map2(data, N,
         function(data, N, fun = fun, R0 = 6.2, beta = 1/8, I0_factor = 10, method = c("confirmed", "shutdown", "quarantine")) {
           if(fun == 'SIR') {
             # set parameters/ranges for SIR model.
@@ -248,7 +248,5 @@ plot_predictions <- function(country, data, predictions) {
       size = 2,
       shape = 1
     )
-  # p1 + 
-  p1 + scale_y_log10(labels = scales::trans_format("log10", scales::math_format(10^.x))) +
-    NULL
+  p1
 }
