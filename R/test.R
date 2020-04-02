@@ -28,7 +28,7 @@ N <- ny$N
 
 
 # set parameters for the model
-R0 <- 6.2
+R0 <- 10
 
 gamma <- 1/8
 I0_factor <- 10
@@ -91,3 +91,45 @@ new <- ode(y = init, times = new_times, func = eval(as.symbol(fun)), parms = opt
   as.data.frame() %>%
   map_dfc(as.numeric) %>%
   mutate_at(vars(-time), ~ .x * opt$par["N"])
+
+
+florida <- `usa_data_2020-04-01` %>% filter(state_abb == 'FL') %$% data[[1]] %>% 
+  mutate(
+    group = 'actual',
+    new_cases = Infected - dplyr::lag(Infected, default = 0)
+  ) %>%
+  rename(total_cases = Infected) %>%
+  pivot_longer(cols = c(total_cases, new_cases), names_to = "cat", values_to = "count")
+florida_pred <- 
+  SIRX_confirmed_usa %>%
+  filter(state_abb == 'FL') %$%
+  fit[[1]] %>%
+  mutate(
+    group = 'predicted',
+    new_cases = X - dplyr::lag(X, default = 0)
+  ) %>%
+  rename(total_cases = X, day = time) %>%
+  pivot_longer(cols = c(total_cases, new_cases), names_to = "cat", values_to = "count")
+
+
+florida %>%
+  select(day, count, cat, group) %>%
+  ggplot(aes(day, count, color = factor(cat))) + 
+  geom_point() + 
+  geom_line(data = florida_pred) + 
+  theme_minimal() + 
+  theme(legend.position = 'none') + 
+  scale_y_log10() +
+  NULL
+
+florida %>%
+  filter(cat == 'new_cases') %>%
+  select(day, count, cat, group) %>%
+  ggplot(aes(day, count, color = factor(cat))) + 
+  geom_point() + 
+  geom_line(data = florida_pred %>% filter(cat == 'new_cases')) +
+  theme_minimal() + 
+  theme(legend.position = 'none') + 
+  # scale_y_log10() +
+  NULL
+
