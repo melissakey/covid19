@@ -7,6 +7,12 @@ library(tidyselect)
 library(magrittr)
 library(glue)
 library(rjson)
+library(lubridate)
+
+
+# getting data
+library(covid19us)
+library(openxlsx)
 
 # Plotting
 library(scales)
